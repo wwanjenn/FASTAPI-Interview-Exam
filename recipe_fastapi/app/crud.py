@@ -102,4 +102,11 @@ def deleteRating(db: Session, ratingId: int):
         db.commit()
     return dbRating
 
+def createUser(db: Session, user: schemas.UserCreate):
+    dbUser = models.User(**user.model_dump())
+    db.add(dbUser)
+    db.commit()
+    db.refresh(dbUser)
+    return dbUser
+
 

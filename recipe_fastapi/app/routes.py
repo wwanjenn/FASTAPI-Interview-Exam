@@ -5,7 +5,7 @@ from .database import get_db
 
 router = APIRouter()
 
-@router.get("/recipes/my/", response_model=list[schemas.Recipe])
+@router.get("/recipes/{owner_id}/", response_model=list[schemas.Recipe])
 def get_recipes_by_owner(db: Session, owner_id: int, skip: int = 0, limit: int = 10):
     return db.query(models.Recipe).filter(models.Recipe.owner_id == owner_id).order_by(models.Recipe.created_at.desc()).offset(skip).limit(limit).all()
 
@@ -99,3 +99,9 @@ def deleteComment(commentId: int, db: Session = Depends(get_db)):
     if dbComment is None:
         raise HTTPException(status_code= 404, detail = "Comment not found")
     return dbComment
+
+#############################################################################################################
+
+@router.post("/user/", response_model= schemas.Comment)
+def createUser(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    return crud.createUser(db= db, user= user)
