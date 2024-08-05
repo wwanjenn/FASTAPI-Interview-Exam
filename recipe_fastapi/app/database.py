@@ -1,14 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-engine = create_engine(DATABASE_URL)
+engine = create_engine('mssql://DESKTOP-R845CQ0\\SQLEXPRESS/recipeAPI?driver=ODBC+Driver+17+for+SQL+Server')
+#['SQL Server', 'SQL Server Native Client RDA 11.0', 'ODBC Driver 17 for SQL Server', 'ODBC+Driver+18+for+SQL+Server']
 SessionLocal = sessionmaker(autocommit = False, autoflush= False, bind= engine)
 Base = declarative_base()
 

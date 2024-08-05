@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-import crud, schemas
-from database import get_db
+from . import crud, models, schemas
+from .database import get_db
 
 router = APIRouter()
 
@@ -52,7 +52,7 @@ def readRating(ratingId: int, db: Session = Depends(get_db)):
     return dbRating
 
 @router.put("/ratings/{ratingId}", response_model= list[schemas.Rating])
-def updateRating(ratingId: int, rating: schemas.ratingUpdate, db: Session = Depends(get_db)):
+def updateRating(ratingId: int, rating: schemas.RatingUpdate, db: Session = Depends(get_db)):
     dbRating = crud.updateRating(db, ratingId= ratingId, rating= rating)
     if dbRating is None:
         raise HTTPException(status_code= 404, detail = "Rating not found")
