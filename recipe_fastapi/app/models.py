@@ -23,7 +23,7 @@ class Rating(Base):
     rating = Column(Integer)
     recipe = relationship("Recipe", back_populates = "ratings")
 
-class Comments(Base):
+class Comment(Base):
     __tablename__ = "comments"
     id = Column(Integer, primary_key= True, index= True)
     recipe_id = Column(Integer, ForeignKey("recipes.id"))

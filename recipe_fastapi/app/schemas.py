@@ -25,6 +25,9 @@ class RatingBase(BaseModel):
 class RatingCreate(RatingBase):
     pass
 
+class RatingUpdate(RatingBase):
+    pass
+
 class Rating(RatingBase):
     id: int
     recipe_id: int
@@ -36,6 +39,9 @@ class CommentBase(BaseModel):
     text: str
 
 class CommentCreate(CommentBase):
+    pass
+
+class CommentUpdate(CommentBase):
     pass
 
 class Comment(CommentBase):
