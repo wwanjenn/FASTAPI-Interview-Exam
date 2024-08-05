@@ -5,103 +5,107 @@ from .database import get_db
 
 router = APIRouter()
 
+# Recipes Routes
+
 @router.get("/recipes/{owner_id}/", response_model=list[schemas.Recipe])
-def get_recipes_by_owner(db: Session, owner_id: int, skip: int = 0, limit: int = 10):
+def get_recipes_by_owner(owner_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(models.Recipe).filter(models.Recipe.owner_id == owner_id).order_by(models.Recipe.created_at.desc()).offset(skip).limit(limit).all()
 
-@router.post("/recipes/", response_model= schemas.Recipe)
-def createRecipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db)):
-    return crud.createRecipe(db= db, recipe= recipe)
+@router.post("/recipes/", response_model=schemas.Recipe)
+def create_recipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db)):
+    if recipe.owner_id is None:
+        raise HTTPException(status_code=400, detail="Owner ID is required")
+    return crud.create_recipe(db, recipe)
 
-@router.get("/recipes/", response_model= list[schemas.Recipe])
-def readRecipes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return crud.getRecipes(db, skip= skip, limit = limit)
+@router.get("/recipes/", response_model=list[schemas.Recipe])
+def read_recipes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return crud.get_recipes(db, skip=skip, limit=limit)
 
-@router.get("/recipes/{recipeId}", response_model= list[schemas.Recipe])
-def readRecipe(recipeId: int, db: Session = Depends(get_db)):
-    dbRecipe = crud.getRecipe(db, recipeId= recipeId)
-    if dbRecipe is None:
-        raise HTTPException(status_code= 404, detail = "Recipe not found")
-    return dbRecipe
+@router.get("/recipes/{recipe_id}", response_model=schemas.Recipe)
+def read_recipe(recipe_id: int, db: Session = Depends(get_db)):
+    db_recipe = crud.get_recipe(db, recipe_id=recipe_id)
+    if db_recipe is None:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    return db_recipe
 
-@router.put("/recipes/{recipeId}", response_model= list[schemas.Recipe])
-def updateRecipe(recipeId: int, recipe: schemas.RecipeUpdate, db: Session = Depends(get_db)):
-    dbRecipe = crud.updateRecipe(db, recipeId= recipeId, recipe= recipe)
-    if dbRecipe is None:
-        raise HTTPException(status_code= 404, detail = "Recipe not found")
-    return dbRecipe
+@router.put("/recipes/{recipe_id}", response_model=schemas.Recipe)
+def update_recipe(recipe_id: int, recipe: schemas.RecipeUpdate, db: Session = Depends(get_db)):
+    db_recipe = crud.update_recipe(db, recipe_id=recipe_id, recipe=recipe)
+    if db_recipe is None:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    return db_recipe
 
-@router.delete("/recipes/{recipeId}", response_model= list[schemas.Recipe])
-def deleteRecipe(recipeId: int, db: Session = Depends(get_db)):
-    dbRecipe = crud.deleteRecipe(db, recipeId= recipeId)
-    if dbRecipe is None:
-        raise HTTPException(status_code= 404, detail = "Recipe not found")
-    return dbRecipe
+@router.delete("/recipes/{recipe_id}", response_model=schemas.Recipe)
+def delete_recipe(recipe_id: int, db: Session = Depends(get_db)):
+    db_recipe = crud.delete_recipe(db, recipe_id=recipe_id)
+    if db_recipe is None:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    return db_recipe
 
-###########################################################################################################
+# Ratings Routes
 
-@router.post("/ratings/", response_model= schemas.Rating)
-def createRating(rating: schemas.RatingCreate, db: Session = Depends(get_db)):
-    return crud.createRating(db= db, rating= rating)
+@router.post("/ratings/", response_model=schemas.Rating)
+def create_rating(rating: schemas.RatingCreate, db: Session = Depends(get_db)):
+    return crud.create_rating(db=db, rating=rating)
 
-@router.get("/ratings/", response_model= list[schemas.Rating])
-def readRating(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return crud.getRatings(db, skip= skip, limit = limit)
+@router.get("/ratings/", response_model=list[schemas.Rating])
+def read_ratings(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return crud.get_ratings(db, skip=skip, limit=limit)
 
-@router.get("/ratings/{ratingId}", response_model= list[schemas.Rating])
-def readRating(ratingId: int, db: Session = Depends(get_db)):
-    dbRating = crud.getRating(db, ratingId= ratingId)
-    if dbRating is None:
-        raise HTTPException(status_code= 404, detail = "Rating not found")
-    return dbRating
+@router.get("/ratings/{rating_id}", response_model=schemas.Rating)
+def read_rating(rating_id: int, db: Session = Depends(get_db)):
+    db_rating = crud.get_rating(db, rating_id=rating_id)
+    if db_rating is None:
+        raise HTTPException(status_code=404, detail="Rating not found")
+    return db_rating
 
-@router.put("/ratings/{ratingId}", response_model= list[schemas.Rating])
-def updateRating(ratingId: int, rating: schemas.RatingUpdate, db: Session = Depends(get_db)):
-    dbRating = crud.updateRating(db, ratingId= ratingId, rating= rating)
-    if dbRating is None:
-        raise HTTPException(status_code= 404, detail = "Rating not found")
-    return dbRating
+@router.put("/ratings/{rating_id}", response_model=schemas.Rating)
+def update_rating(rating_id: int, rating: schemas.RatingUpdate, db: Session = Depends(get_db)):
+    db_rating = crud.update_rating(db, rating_id=rating_id, rating=rating)
+    if db_rating is None:
+        raise HTTPException(status_code=404, detail="Rating not found")
+    return db_rating
 
-@router.delete("/ratings/{ratingId}", response_model= list[schemas.Rating])
-def deleteRating(ratingId: int, db: Session = Depends(get_db)):
-    dbRating = crud.deleteRating(db, ratingId= ratingId)
-    if dbRating is None:
-        raise HTTPException(status_code= 404, detail = "Rating not found")
-    return dbRating
+@router.delete("/ratings/{rating_id}", response_model=schemas.Rating)
+def delete_rating(rating_id: int, db: Session = Depends(get_db)):
+    db_rating = crud.delete_rating(db, rating_id=rating_id)
+    if db_rating is None:
+        raise HTTPException(status_code=404, detail="Rating not found")
+    return db_rating
 
-##########################################################################################################
+# Comments Routes
 
-@router.post("/comments/", response_model= schemas.Comment)
-def createComment(comment: schemas.CommentCreate, db: Session = Depends(get_db)):
-    return crud.createComment(db= db, comment= comment)
+@router.post("/comments/", response_model=schemas.Comment)
+def create_comment(comment: schemas.CommentCreate, db: Session = Depends(get_db)):
+    return crud.create_comment(db=db, comment=comment)
 
-@router.get("/comments/", response_model= list[schemas.Comment])
-def readComments(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return crud.getComments(db, skip= skip, limit = limit)
+@router.get("/comments/", response_model=list[schemas.Comment])
+def read_comments(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return crud.get_comments(db, skip=skip, limit=limit)
 
-@router.get("/comments/{commentId}", response_model= list[schemas.Comment])
-def readComment(commentId: int, db: Session = Depends(get_db)):
-    dbComment = crud.getComment(db, commentId= commentId)
-    if dbComment is None:
-        raise HTTPException(status_code= 404, detail = "Comment not found")
-    return dbComment
+@router.get("/comments/{comment_id}", response_model=schemas.Comment)
+def read_comment(comment_id: int, db: Session = Depends(get_db)):
+    db_comment = crud.get_comment(db, comment_id=comment_id)
+    if db_comment is None:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return db_comment
 
-@router.put("/comments/{commentId}", response_model= list[schemas.Comment])
-def updateComment(commentId: int, comment: schemas.CommentUpdate, db: Session = Depends(get_db)):
-    dbComment = crud.updateComment(db, commentId= commentId, comment= comment)
-    if dbComment is None:
-        raise HTTPException(status_code= 404, detail = "Comment not found")
-    return dbComment
+@router.put("/comments/{comment_id}", response_model=schemas.Comment)
+def update_comment(comment_id: int, comment: schemas.CommentUpdate, db: Session = Depends(get_db)):
+    db_comment = crud.update_comment(db, comment_id=comment_id, comment=comment)
+    if db_comment is None:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return db_comment
 
-@router.delete("/comments/{commentId}", response_model= list[schemas.Comment])
-def deleteComment(commentId: int, db: Session = Depends(get_db)):
-    dbComment = crud.deleteComment(db, commentId= commentId)
-    if dbComment is None:
-        raise HTTPException(status_code= 404, detail = "Comment not found")
-    return dbComment
+@router.delete("/comments/{comment_id}", response_model=schemas.Comment)
+def delete_comment(comment_id: int, db: Session = Depends(get_db)):
+    db_comment = crud.delete_comment(db, comment_id=comment_id)
+    if db_comment is None:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return db_comment
 
-#############################################################################################################
+# User Routes
 
-@router.post("/user/", response_model= schemas.Comment)
-def createUser(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    return crud.createUser(db= db, user= user)
+@router.post("/users/", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    return crud.create_user(db=db, user=user)
