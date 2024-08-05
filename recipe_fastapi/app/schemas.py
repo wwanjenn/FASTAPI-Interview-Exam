@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class RecipeBase(BaseModel):
     name: str
@@ -43,4 +44,17 @@ class Comment(CommentBase):
 
     class Config:
         orm_mode = True
-        
+
+class UserBase(BaseModel):
+    email: str
+
+class UserCreate(UserBase):
+    password:str
+
+class User(UserBase):
+    id: int
+    isActive: bool
+    recipes: List[Recipe] = []
+    
+    class Config:
+        orm_mode = True
