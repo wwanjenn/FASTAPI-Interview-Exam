@@ -33,7 +33,7 @@ def deleteRecipe(db: Session, recipeId: int):
 def getComment(db: Session, commentId: int):
     return db.query(models.Comment).filter(models.Comment.id == commentId).first()
 
-def getComment(db: Session, skip: int = 0, limit: int = 10):
+def getComments(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Comment).offset(skip).limit(limit).all()
 
 def createComment(db: Session, comment: schemas.CommentCreate):
