@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy import relationship
-from.database import Base
+from sqlalchemy import Column, Integer, String, Boolean,ForeignKey
+from sqlalchemy.orm import relationship
+
+from database import Base
 
 class Recipe(Base):
     __tablename__ = "recipes"
@@ -11,6 +12,8 @@ class Recipe(Base):
     time = Column(Integer)
     ratings = relationship("Rating", back_populates = "recipe")
     comments = relationship("Coment", back_populates = "recipe")
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates= "recipes")
 
 class Rating(Base):
     __tablename__ = "ratings"
@@ -27,4 +30,12 @@ class Comments(Base):
     text = Column(String)
     recipe = relationship("Recipe", back_populates = "comments")
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key= True, index= True)
+    email = Column(String, unique= True, index= True)
+    hasedPassword = Column(String)
+    isActive = Column(Boolean, default = True)
+    recipes = relationship("Recipe", back_populates= "owner")
 
