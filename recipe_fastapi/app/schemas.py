@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+import datetime
+from pydantic import BaseModel, Field
 from typing import List
 
 class RecipeBase(BaseModel):
@@ -6,6 +7,8 @@ class RecipeBase(BaseModel):
     ingredients: str
     steps: str
     time: int
+    owner_id: int
+    created_at: datetime
 
 class RecipeCreate(RecipeBase):
     pass
@@ -20,7 +23,9 @@ class Recipe(RecipeBase):
         orm_mode = True
 
 class RatingBase(BaseModel):
-    rating: int
+    rating: int = Field(..., ge=1, le=5)
+    recipe_id: int
+    owner_id: int
 
 class RatingCreate(RatingBase):
     pass
@@ -30,13 +35,14 @@ class RatingUpdate(RatingBase):
 
 class Rating(RatingBase):
     id: int
-    recipe_id: int
     
     class Config:
         orm_mode= True
 
 class CommentBase(BaseModel):
     text: str
+    recipe_id: int
+    owner_id: int
 
 class CommentCreate(CommentBase):
     pass
@@ -46,7 +52,6 @@ class CommentUpdate(CommentBase):
 
 class Comment(CommentBase):
     id: int
-    recipe_id: int
 
     class Config:
         orm_mode = True

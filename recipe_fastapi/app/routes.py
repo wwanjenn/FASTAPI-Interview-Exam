@@ -5,6 +5,10 @@ from .database import get_db
 
 router = APIRouter()
 
+@router.get("/recipes/my/", response_model=list[schemas.Recipe])
+def get_recipes_by_owner(db: Session, owner_id: int, skip: int = 0, limit: int = 10):
+    return db.query(models.Recipe).filter(models.Recipe.owner_id == owner_id).order_by(models.Recipe.created_at.desc()).offset(skip).limit(limit).all()
+
 @router.post("/recipes/", response_model= schemas.Recipe)
 def createRecipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db)):
     return crud.createRecipe(db= db, recipe= recipe)
